@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Wikswipe</title>
+  <link rel="stylesheet" href="style.css">
+  <meta name="theme-color" content="#0f0f0f">
+</head>
+<body>
+  <div class="phone">
+    <div class="screen">
+      <div class="topbar">
+        <div class="logo">Wik<span>swipe</span></div>
+      </div>
+
+      <!-- ONBOARDING OVERLAY -->
+      <div id="onboarding-screen" class="onboarding">
+        <div class="onboard-content">
+          <h1>What are you into?</h1>
+          <p>Pick 3 or more topics to personalize your feed.</p>
+          <div class="pill-grid" id="interest-pills">
+            <!-- Pills injected by JS -->
+          </div>
+          <button id="btn-start" class="btn-primary" disabled>Start Swiping</button>
+        </div>
+      </div>
+      <div class="progress-dots" id="dots"></div>
+      <div class="card-area">
+        <div class="card-stack" id="stack">
+          <div class="card bg-card-3" id="card3"></div>
+          <div class="card bg-card-2" id="card2"></div>
+          <div class="card top-card" id="card1"></div>
+        </div>
+        <div class="toast" id="toast"></div>
+        <!-- Loader when API is fetching -->
+        <div id="loader" class="loader">Loading articles...</div>
+      </div>
+      <div class="actions">
+        <button class="btn btn-nope" id="btn-nope" title="Not interested">✕</button>
+        <button class="btn btn-share" id="btn-share" title="Share as story">↑</button>
+        <button class="btn btn-like" id="btn-like" title="Liked!">♥</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="src/onboarding.js" type="module"></script>
+  <script src="src/wikipedia.js" type="module"></script>
+  <script src="src/ui.js" type="module"></script>
+  <script src="src/main.js" type="module"></script>
+</body>
+</html>

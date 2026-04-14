@@ -1,0 +1,188 @@
+
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+.phone{background:#0f0f0f;border-radius:40px;width:340px;height:680px;margin:1.5rem auto;padding:12px;position:relative;border:1px solid #333}
+.screen{background:#111;border-radius:30px;width:100%;height:100%;overflow:hidden;display:flex;flex-direction:column;position:relative}
+.statusbar{display:flex;justify-content:space-between;align-items:center;padding:14px 20px 6px;color:#fff;font-size:11px;font-weight:500}
+.topbar{padding:8px 20px;display:flex;align-items:center;justify-content:space-between}
+.logo{font-size:20px;font-weight:700;color:#fff;letter-spacing:-0.5px}
+.logo span{color:#7F77DD}
+.streak{background:#1a1a2e;border:1px solid #534AB7;border-radius:20px;padding:4px 10px;font-size:11px;color:#AFA9EC;display:flex;align-items:center;gap:5px}
+.streak-dot{width:6px;height:6px;border-radius:50%;background:#7F77DD}
+.card-area{flex:1;display:flex;align-items:center;justify-content:center;position:relative;padding:0 16px}
+.card-stack{position:relative;width:100%;height:440px}
+.card{position:absolute;width:100%;height:100%;border-radius:20px;overflow:hidden;cursor:grab;user-select:none;transition:transform 0.08s ease;will-change:transform}
+.card:active{cursor:grabbing}
+.card-bg{width:100%;height:220px;object-fit:cover;display:flex;align-items:center;justify-content:center;font-size:48px}
+.card-content{background:#1a1a1a;padding:18px;height:calc(100% - 220px);display:flex;flex-direction:column;gap:10px}
+.card-domain{font-size:10px;font-weight:600;letter-spacing:1px;text-transform:uppercase;color:#7F77DD}
+.card-title{font-size:18px;font-weight:700;color:#fff;line-height:1.2}
+.card-summary{font-size:12px;color:#aaa;line-height:1.6;flex:1}
+.card-footer{display:flex;align-items:center;justify-content:space-between}
+.read-more{font-size:11px;color:#7F77DD;font-weight:500}
+.card-num{font-size:10px;color:#555}
+.swipe-hint{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);border-radius:12px;padding:8px 18px;font-size:16px;font-weight:800;letter-spacing:1px;opacity:0;pointer-events:none;transition:opacity 0.15s;z-index:10}
+.hint-like{border:3px solid #1D9E75;color:#1D9E75;background:rgba(29,158,117,0.1)}
+.hint-nope{border:3px solid #E24B4A;color:#E24B4A;background:rgba(226,74,74,0.1)}
+.bg-card-2{transform:scale(0.95) translateY(12px);background:#1e1e2a;z-index:1}
+.bg-card-3{transform:scale(0.90) translateY(24px);background:#161620;z-index:0}
+.top-card{z-index:2}
+.actions{display:flex;align-items:center;justify-content:center;gap:20px;padding:12px 0 16px}
+.btn{width:52px;height:52px;border-radius:50%;border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:20px;transition:transform 0.1s}
+.btn:active{transform:scale(0.92)}
+.btn-nope{background:#2a1a1a;color:#E24B4A}
+.btn-like{background:#1a2a22;color:#1D9E75}
+.btn-share{background:#1a1a2a;color:#7F77DD;width:40px;height:40px;font-size:16px}
+.feedback{position:absolute;top:0;left:0;right:0;bottom:0;display:flex;align-items:center;justify-content:center;border-radius:20px;font-size:22px;font-weight:800;letter-spacing:1px;opacity:0;pointer-events:none;transition:opacity 0.2s;z-index:20}
+.feedback-like{background:rgba(29,158,117,0.15);color:#1D9E75;border:3px solid #1D9E75}
+.feedback-nope{background:rgba(226,74,74,0.15);color:#E24B4A;border:3px solid #E24B4A}
+.progress-dots{display:flex;gap:4px;justify-content:center;padding-bottom:4px}
+.dot{width:6px;height:6px;border-radius:50%;background:#333;transition:background 0.3s}
+.dot.active{background:#7F77DD}
+.toast{position:absolute;bottom:90px;left:50%;transform:translateX(-50%);background:#222;border:1px solid #333;border-radius:12px;padding:8px 16px;font-size:12px;color:#aaa;white-space:nowrap;opacity:0;transition:opacity 0.3s;pointer-events:none;z-index:30}
+</style>
+
+<div class="phone">
+  <div class="screen">
+    <div class="statusbar">
+      <span>9:41</span>
+      <span>●●●</span>
+    </div>
+    <div class="topbar">
+      <div class="logo">Wik<span>swipe</span></div>
+      <div class="streak"><div class="streak-dot"></div><span id="streak-count">7 day streak</span></div>
+    </div>
+    <div class="progress-dots" id="dots"></div>
+    <div class="card-area">
+      <div class="card-stack" id="stack">
+        <div class="card bg-card-3" id="card3"></div>
+        <div class="card bg-card-2" id="card2"></div>
+        <div class="card top-card" id="card1">
+          <div class="swipe-hint hint-like" id="hint-like">LIKE</div>
+          <div class="swipe-hint hint-nope" id="hint-nope">NOPE</div>
+          <div class="feedback feedback-like" id="fb-like">LIKED</div>
+          <div class="feedback feedback-nope" id="fb-nope">NOPED</div>
+        </div>
+      </div>
+      <div class="toast" id="toast"></div>
+    </div>
+    <div class="actions">
+      <button class="btn btn-nope" onclick="swipeLeft()" title="Not interested">✕</button>
+      <button class="btn btn-share" onclick="showShare()" title="Share as story">↑</button>
+      <button class="btn btn-like" onclick="swipeRight()" title="Liked!">♥</button>
+    </div>
+  </div>
+</div>
+
+<script>
+const articles=[
+  {domain:"History",color:"#1a1820",accent:"#534AB7",bg:"#2a2840",icon:"⚔️",title:"Battle of Thermopylae",summary:"In 480 BC, 300 Spartans held off the Persian army of over 100,000 soldiers for three days at a narrow coastal pass. Their sacrifice allowed Greece to regroup and ultimately defeat Persia.",read:"6 min read"},
+  {domain:"Science",color:"#0f1a1a",accent:"#0F6E56",bg:"#1a2e28",icon:"🧬",title:"CRISPR-Cas9",summary:"A revolutionary gene-editing tool borrowed from bacterial immune systems. Scientists can now cut and paste DNA with precision, opening doors to curing genetic diseases.",read:"8 min read"},
+  {domain:"Space",color:"#0a0a1f",accent:"#185FA5",bg:"#12122e",icon:"🌌",title:"Voyager 1",summary:"Launched in 1977, Voyager 1 is the most distant human-made object in existence, now over 23 billion km from Earth and still sending data back via a 40-year-old antenna.",read:"5 min read"},
+  {domain:"Geo-politics",color:"#1a0f0a",accent:"#993C1D",bg:"#2e1a12",icon:"🗺️",title:"Silk Road",summary:"An ancient network of trade routes connecting China to the Mediterranean for over 1,500 years. It spread not just goods, but religions, plagues, and entire civilizations.",read:"10 min read"},
+  {domain:"Philosophy",color:"#1a1a0f",accent:"#854F0B",bg:"#2a2810",icon:"🏛️",title:"Stoicism",summary:"Founded in Athens around 300 BC, Stoicism teaches that virtue is the only true good. Marcus Aurelius ruled the Roman Empire by its principles — and journaled about failing at it daily.",read:"7 min read"},
+  {domain:"Biology",color:"#0a1a12",accent:"#3B6D11",bg:"#102214",icon:"🐙",title:"Octopus intelligence",summary:"Octopuses have neurons distributed throughout their arms — each arm can taste, touch, and think semi-independently. They can solve puzzles, use tools, and recognize individual humans.",read:"6 min read"},
+];
+
+let current=0,liked=0,noped=0,dragging=false,startX=0,startY=0,curX=0;
+const card=document.getElementById('card1');
+const card2=document.getElementById('card2');
+const card3=document.getElementById('card3');
+const hintLike=document.getElementById('hint-like');
+const hintNope=document.getElementById('hint-nope');
+const fbLike=document.getElementById('fb-like');
+const fbNope=document.getElementById('fb-nope');
+const dotsEl=document.getElementById('dots');
+const toast=document.getElementById('toast');
+
+function buildCard(el,idx){
+  const a=articles[idx%articles.length];
+  el.style.background=a.color;
+  el.innerHTML=`
+    <div class="swipe-hint hint-like" style="display:${el.id==='card1'?'block':'none'}">LIKE</div>
+    <div class="swipe-hint hint-nope" style="display:${el.id==='card1'?'block':'none'}">NOPE</div>
+    ${el.id==='card1'?'<div class="feedback feedback-like" id="fb-like">LIKED</div><div class="feedback feedback-nope" id="fb-nope">NOPED</div>':''}
+    <div class="card-bg" style="background:${a.bg};font-size:72px;display:flex;align-items:center;justify-content:center">${a.icon}</div>
+    <div class="card-content">
+      <div class="card-domain" style="color:${a.accent}">${a.domain}</div>
+      <div class="card-title">${a.title}</div>
+      <div class="card-summary">${a.summary}</div>
+      <div class="card-footer">
+        <div class="read-more" style="color:${a.accent}">Read on Wikipedia →</div>
+        <div class="card-num">${a.read}</div>
+      </div>
+    </div>`;
+}
+
+function buildDots(){
+  dotsEl.innerHTML='';
+  for(let i=0;i<Math.min(6,articles.length);i++){
+    const d=document.createElement('div');
+    d.className='dot'+(i===current%articles.length?' active':'');
+    dotsEl.appendChild(d);
+  }
+}
+
+function showToast(msg){
+  toast.textContent=msg;toast.style.opacity='1';
+  setTimeout(()=>toast.style.opacity='0',1800);
+}
+
+function animateSwipe(dir){
+  const el=document.getElementById('card1');
+  const fb=el.querySelector(dir>0?'.feedback-like':'.feedback-nope');
+  if(fb)fb.style.opacity='1';
+  el.style.transition='transform 0.35s ease';
+  el.style.transform=`translateX(${dir*500}px) rotate(${dir*20}deg)`;
+  if(dir>0){liked++;showToast('Saved to liked articles');}else{noped++;showToast('Got it — we\'ll learn from that');}
+  setTimeout(()=>advanceCards(),380);
+}
+
+function advanceCards(){
+  current++;
+  buildCard(document.getElementById('card1'),current);
+  buildCard(document.getElementById('card2'),current+1);
+  buildCard(document.getElementById('card3'),current+2);
+  document.getElementById('card1').style.transform='';
+  document.getElementById('card1').style.transition='';
+  buildDots();
+  document.getElementById('streak-count')=`${liked+noped} swiped`;
+}
+
+function swipeLeft(){animateSwipe(-1);}
+function swipeRight(){animateSwipe(1);}
+
+function showShare(){showToast('Story builder — coming soon!');}
+
+card.addEventListener('pointerdown',e=>{
+  dragging=true;startX=e.clientX;startY=e.clientY;curX=0;
+  card.style.transition='none';card.setPointerCapture(e.pointerId);
+});
+
+card.addEventListener('pointermove',e=>{
+  if(!dragging)return;
+  curX=e.clientX-startX;
+  const rot=curX*0.08;
+  card.style.transform=`translateX(${curX}px) rotate(${rot}deg)`;
+  const lh=document.getElementById('hint-like');
+  const nh=document.getElementById('hint-nope');
+  const threshold=50;
+  if(lh&&nh){
+    lh.style.opacity=curX>threshold?Math.min((curX-threshold)/60,1):'0';
+    nh.style.opacity=curX<-threshold?Math.min((-curX-threshold)/60,1):'0';
+  }
+});
+
+card.addEventListener('pointerup',()=>{
+  if(!dragging)return;dragging=false;
+  const threshold=100;
+  if(curX>threshold)animateSwipe(1);
+  else if(curX<-threshold)animateSwipe(-1);
+  else{card.style.transition='transform 0.3s spring(1,100,10,0)';card.style.transform='';
+    const lh=document.getElementById('hint-like');const nh=document.getElementById('hint-nope');
+    if(lh)lh.style.opacity='0';if(nh)nh.style.opacity='0';
+  }
+});
+
+buildCard(card,0);buildCard(card2,1);buildCard(card3,2);buildDots();
+</script>

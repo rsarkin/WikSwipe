@@ -1,0 +1,192 @@
+=== WIKISWIPE PRD DOCX ===
+Wikswipe
+Product Requirements Document
+Version 1.0  |  March 2026  |  Solo Build
+Author: Arkin
+
+1. Product overview
+Wikswipe is a mobile-first web app that turns Wikipedia into an addictive, swipeable knowledge feed. Users discover random Wikipedia articles presented as clean cards with a thumbnail, domain tag, and AI-condensed 3-sentence summary. Swipe right to save, swipe left to skip. The more you swipe, the smarter the feed gets.
+
+One-liner
+"TikTok for knowledge — powered by Wikipedia."
+
+Problem
+Wikipedia has 6.7 million articles but feels like a textbook — nobody browses it for fun.
+Discovery is broken — you only land on Wikipedia when Googling something specific.
+Knowledge consumption is passive — no feedback loop, no personalisation, no shareability.
+
+Solution
+Swipe-based discovery makes Wikipedia browsable and fun.
+AI summarisation strips each article to the 3 most interesting sentences.
+A sub-topic affinity model learns not just your domain (History) but your micro-interests (WW2, Vikings) vs what you skip (Renaissance).
+A story builder lets you export any fact as a shareable vertical card — Spotify Wrapped meets Wikipedia.
+
+2. Goals & success metrics
+
+3. User personas
+Primary — The curious nerd
+18–26 years old, college student or early career.
+Consumes podcasts, YouTube deep dives, Reddit rabbit holes.
+Wants to feel smarter without committing to a full Wikipedia article.
+Shares interesting facts on Instagram Stories and WhatsApp.
+
+Secondary — The knowledge flexer
+Uses Wikswipe to collect talking points for conversations.
+Regularly shares story cards to position themselves as the “smart friend”.
+Cares about niche topics — not just broad domains.
+
+4. Feature list
+Phase 1 — Core swipe UI + Wikipedia feed
+Target: 2–3 weeks. MVP that gets the core loop working with real data.
+
+
+Phase 2 — Interest onboarding + AI summarisation
+Target: 1–2 weeks. Makes the feed feel personalised from day one.
+
+
+Phase 3 — Sub-topic affinity model (the main twist)
+Target: 2–3 weeks. The core differentiator — learns micro-interests, not just broad domains.
+
+The key insight: “History” is not one interest. A user who likes WW1, WW2, and Vikings but consistently skips Renaissance art has a specific taste profile. The affinity model tracks this at the Wikipedia category level.
+
+Scoring rules
+Right swipe → +1.0 to all Wikipedia categories of that article
+Left swipe → −0.5 (soft penalty, not a hard block)
+Immediate skip (< 1 second dwell) → −1.0 (strong penalty)
+Wikipedia redirect (tap to read) → +2.0 (strongest positive signal)
+
+
+Phase 4 — Story builder + sharing
+Target: 1–2 weeks. Virality engine — turns any article into a shareable vertical card.
+
+
+5. Tech stack
+
+6. API reference
+Wikipedia REST API
+Base URL: https://en.wikipedia.org/api/rest_v1
+
+
+Claude Haiku API (Phase 2)
+Model: claude-haiku-4-5-20251001  |  Max tokens: 200  |  Called per card load via edge function.
+
+Summarisation prompt
+Summarise this Wikipedia article in exactly 3 sentences. Sentence 1: what it is. Sentence 2: why it matters historically or scientifically. Sentence 3: one surprising or counterintuitive fact. Be concise. No bullet points. Article: {extract}
+
+7. Affinity model spec
+Data structure
+// Stored in localStorage as JSON
+{
+  "World_War_II": 4.5,
+  "Viking_Age": 3.0,
+  "Military_history": 2.5,
+  "Italian_Renaissance": -1.5,
+  "Art_history": -0.5
+}
+
+Scoring algorithm
+score(article) = Σ (category_weight[cat] × affinity[cat])
+                for each cat in article.categories
+
+// Normalise by number of categories
+// Add 15% random exploration pool
+// Always surface top scorer from remaining 85%
+
+8. Project file structure
+wikswipe/
+├── index.html          ← app shell
+├── style.css           ← all styles
+├── src/
+│   ├── main.js         ← entry point, swipe logic
+│   ├── wikipedia.js    ← API fetching
+│   ├── affinity.js     ← weight map + scoring
+│   ├── story.js        ← story card builder
+│   └── ui.js           ← DOM helpers
+├── workers/
+│   └── summarise.js    ← Cloudflare Worker (Claude API)
+└── public/
+    └── icon.png
+
+9. Non-functional requirements
+
+10. Execution timeline
+
+11. Out of scope (v1)
+Native iOS or Android app — PWA is sufficient for MVP
+User accounts / authentication — localStorage only in Phase 1–2
+Social features (follow, comments, leaderboards)
+Multi-language Wikipedia support
+Paid features or monetisation
+Admin dashboard or analytics backend
+
+12. Open questions
+Should the exploration factor (currently 15%) be user-adjustable via a settings toggle?
+Do we show the article’s Wikipedia categories visibly on the card, or keep them hidden (only used for scoring)?
+Story card — should it auto-generate on right swipe, or only on explicit share button tap?
+Should we allow users to manually add interests post-onboarding, or only infer from swipe behaviour?
+
+End of document
+
+=== WIKISWIPE ANTIGRAVITY BUILD SPEC PDF ===
+🚀 Wikswipe — Vibe Coding Build Spec
+(Antigravity Optimized)
+🧠 PRODUCT INTENT
+Wikswipe is a mobile-first swipe-based knowledge app.
+Core idea: Deliver short, surprising facts from Wikipedia in a continuous swipe feed.
+Primary goal: Maximize continuous swiping and user curiosity.
+Secondary goal: Enable social sharing via story cards.
+📱 GLOBAL RULES
+platform: mobile-first web app
+viewport: width: 360–390px height: 100vh
+theme: background: #0F0F14 card: #1A1A22 text_primary: #FFFFFF text_secondary: #A0A0B0 accent:
+#4DA6FF
+design: border_radius: 24px spacing: 16–24px font: modern sans-serif (bold headings)
+performance: animations: transform + opacity only target: 60fps
+🔁 CORE FLOW
+App Open → Show card back → Flip → Swipe → Next card → Repeat
+🧩 SCREEN: HOME
+components: - swipe_card - next_card - streak_indicator
+🃏 SWIPE CARD
+size: width: 100% height: 90%
+style: background: #1A1A22 border_radius: 24px padding: 16px
+1
+📦 CARD CONTENT (FRONT)
+top_row: - domain_tag - swipe_counter
+image: - thumbnail
+title: - max 2 lines
+summary: - 3 lines
+footer: - "Tap to explore →"
+🔄 CARD STATES
+loading: skeleton back: logo + streak flipping: rotateY front: article
+dragging: rotate: ±10deg
+liked: green overlay skipped: red overlay exit: fly out
+🎬 ANIMATIONS
+flip: delay: 500ms duration: 700ms rotateY: 0 → 180deg scale: 0.96 → 1
+swipe: drag: follow finger release: exit or snap back
+new_card: opacity: 0 → 1 translateY: 20px → 0
+⚙️ INTERACTIONS
+right_swipe: save + affinity +1
+left_swipe: skip + affinity -0.5
+tap: open link + affinity +2
+🧠 DATA MODEL
+Article: { title, summary, thumbnail, categories, url, domain, hookLine }
+User: { streak, swipeCount, likedArticles, affinityMap }
+2
+🔁 DATA FLOW
+on_start: fetch article preload next 3
+on_swipe: update affinity load next
+on_share: open story generator
+🧩 STORY SCREEN
+story_card: ratio: 9:16 resolution: 1080x1920
+structure: top: logo + domain center: hook text bottom: context + source footer: branding
+🎨 STYLE MODES
+gradient image (blurred) solid color
+📤 EXPORT
+method: html2canvas format: PNG resolution: 1080x1920
+🛑 EDGE CASES
+no internet → cached cards api fail → retry no image → gradient
+🚀 PERFORMANCE
+preload 3–5 cards lazy load images 60fps animations
+🎯 GOAL
+Create an addictive swipe-based knowledge experience with seamless sharing.
+3
